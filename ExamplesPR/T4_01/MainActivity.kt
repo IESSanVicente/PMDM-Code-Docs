@@ -1,4 +1,4 @@
-package es.javiercarrasco.examplet4_12
+package es.javiercarrasco.examplet4_01
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,7 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import es.javiercarrasco.examplet4_12.ui.theme.ExampleT4_12Theme
+import es.javiercarrasco.examplet4_01.ui.theme.ExampleT4_01Theme
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ExampleT4_12Theme {
+            ExampleT4_01Theme {
                 Scaffold(
                     topBar = {
                         TopAppBar(
