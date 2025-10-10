@@ -80,6 +80,10 @@ fun AccelerometerSensor() {
     // Registrar el listener del sensor cuando el Composable entre en composición.
     // DisposableEffect se asegura de que el listener se desregistre cuando el Composable se elimine.
     DisposableEffect(Unit) {
+        if (accelerometer == null) {
+            return@DisposableEffect onDispose {}
+        }
+        
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
                 if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
