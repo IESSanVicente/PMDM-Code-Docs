@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Demo01</string>
+    <string name="title_form">Formulario básico</string>
+    <string name="label_name">Nombre</string>
+    <string name="label_surname">Apellidos</string>
+    <string name="label_birthdate">Fecha de nacimiento</string>
+    <string name="label_license">Carnet de conducir</string>
+    <string name="label_no">No</string>
+    <string name="label_yes">Sí</string>
+    <string name="label_evening_shift">Turno de tarde</string>
+    <string name="label_modules">Módulos a elegir</string>
+
+    <array name="modules_array">
+        <item>ADA</item>
+        <item>DI</item>
+        <item>PMDM</item>
+        <item>PSP</item>
+        <item>SGE</item>
+    </array>
+
+    <string name="action_validate">Validar</string>
+    <string name="msg_empty_field">Este campo no puede estar vacío.</string>
+    <string name="msg_select_modules">Debes seleccionar al menos un módulo.</string>
+    <string name="turn_morning">Turno de mañana</string>
+    <string name="summary_person">%1$s %2$s, nacido el %3$s</string>
+    <string name="summary_other">Carnet: %1$s · Turno: %2$s</string>
+    <string name="summary_modules">Módulos seleccionados:\n%1$s</string>
+</resources>
