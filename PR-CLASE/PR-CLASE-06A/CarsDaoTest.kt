@@ -1,13 +1,9 @@
-package es.javiercarrasco.pr_clase_06
+
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import es.javiercarrasco.pr_clase_06.data.CarsDao
-import es.javiercarrasco.pr_clase_06.data.CarsDatabase
-import es.javiercarrasco.pr_clase_06.data.model.Brand
-import es.javiercarrasco.pr_clase_06.data.model.Car
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
