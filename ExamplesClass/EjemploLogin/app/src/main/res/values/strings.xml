@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Ejemplo Login</string>
+
+    <string name="txt_login">Login</string>
+    <string name="txt_logout">Logout</string>
+    <string name="txt_user">Usuario</string>
+    <string name="txt_password">Contraseña</string>
+
+    <string name="txt_login_error">Credenciales incorrectas. %s</string>
+    <string name="txt_login_ok">Credenciales correctas</string>
+    <string name="txt_login_success">¡Login correcto!</string>
+    <string name="txt_login_loading">Esperando respuesta del login.</string>
+</resources>
