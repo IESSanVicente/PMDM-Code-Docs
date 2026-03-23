@@ -2,26 +2,20 @@ package es.javiercarrasco.ejemplologin
 
 import android.app.Application
 import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import es.javiercarrasco.ejemplologin.data.Repository
 import es.javiercarrasco.ejemplologin.data.model.LoginRequest
 import es.javiercarrasco.ejemplologin.data.model.LoginResponse
 import es.javiercarrasco.ejemplologin.data.model.LoginState
-import es.javiercarrasco.ejemplologin.data.model.SessionManager
-import es.javiercarrasco.ejemplologin.data.model.dataStore
-import es.javiercarrasco.ejemplologin.data.remote.RemoteDataSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: Repository
-    private val remoteDatasource: RemoteDataSource
-    private val sessionManager: SessionManager
+    private val TAG = MainViewModel::class.java.simpleName
+    private val sessionManager = (application as CoffeeApp).sessionManager
+    private val repository = (application as CoffeeApp).repository
 
     // Estado del login.
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
@@ -30,39 +24,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _stateCoffee = MutableStateFlow<List<Any>>(emptyList())
     val stateCoffee: StateFlow<List<Any>> = _stateCoffee.asStateFlow()
 
-    init {
-        remoteDatasource = RemoteDataSource()
-        repository = Repository()
-
-        val dataStore: DataStore<Preferences> = application.dataStore
-        sessionManager = SessionManager(dataStore)
-    }
-
     // Función para iniciar sesión y obtener el token.
     fun login(request: LoginRequest) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
-            try {
-                // Realiza la llamada al repositorio para iniciar sesión.
-                val response = repository.login(request)
 
-                // Guarda la sesión utilizando el SessionManager.
-                sessionManager.saveSession(
-                    response.token!!,
-                    request.user
-                ) // Guarda la sesión en el SessionManager.
+            // Realiza la llamada al repositorio para iniciar sesión.
+            val result = repository.login(request)
 
-                _loginState.value = LoginState.Success(response)
-            } catch (e: Exception) {
+            result.onSuccess { token ->
+                // Si el login fue exitoso, el token ya ha sido guardado en el SessionManager
+                // por el Repository, así que solo actualizamos el estado a Success.
+                _loginState.value = LoginState.Success(
+                    LoginResponse(
+                        ok = true,
+                        token = token,
+                        username = request.user,
+                        message = "Login successful"
+                    )
+                )
+            }.onFailure { e ->
                 // Maneja cualquier error que ocurra durante el inicio de sesión.
-                Log.e("MainViewModel", "Error durante el login", e)
+                Log.e(TAG, "Error durante el login", e)
                 _loginState.value = LoginState.Error(e.message ?: "Error desconocido")
             }
         }
     }
 
     // Función para obtener el flujo de la sesión.
-//    fun getSessionFlow(sessionManager: SessionManager) {
     fun getSessionFlow() {
         viewModelScope.launch {
             sessionManager.sessionFlow.collect {
@@ -73,12 +62,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 if (it.first != null) {
                     // Si el token no es null, el usuario ha iniciado sesión y se puede
                     // recuperar el nombre de usuario y el token desde el flujo (DataStore).
-                    _loginState.value = LoginState.Success(LoginResponse(
-                        ok = true,
-                        token = it.first,
-                        username = it.second!!,
-                        message = "Already logged in"
-                    ))
+                    _loginState.value = LoginState.Success(
+                        LoginResponse(
+                            ok = true,
+                            token = it.first,
+                            username = it.second!!,
+                            message = "Already logged in"
+                        )
+                    )
                 } else {
                     // Si el token es null, el usuario no ha iniciado sesión.
                     Log.d("getSessionFlow", "stateOptionLogin: No has iniciado sesión")
@@ -95,17 +86,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-//    fun getCoffees(sessionManager: SessionManager) {
+    // Función para obtener los cafés.
     fun getCoffees() {
         viewModelScope.launch {
-            sessionManager.sessionFlow.collect {
-                try {
-                    _stateCoffee.value = repository.getCoffees(it.first!!)
-                    // Aquí puedes manejar la lista de café obtenida.
-                    Log.d("MainViewModel", "Cafés obtenidos: ${_stateCoffee.value.size}")
-                } catch (e: Exception) {
-                    Log.e("MainViewModel", "Error al obtener el café", e)
-                }
+            repository.fetchCoffees().let { coffees ->
+                _stateCoffee.value = coffees
+                Log.d(TAG, "Cafés obtenidos: ${_stateCoffee.value.size}")
             }
         }
     }
